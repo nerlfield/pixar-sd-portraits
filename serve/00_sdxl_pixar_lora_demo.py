@@ -9,7 +9,7 @@ from PIL import Image
 import math
 import numpy as np
 
-negative_prompt = "noisy, sloppy, messy, grainy, highly detailed, ultra textured, photo, NSFW"
+negative_prompt = "noisy, messy, grainy, highly detailed, ultra textured, photo, NSFW"
 
 image_encoder = CLIPVisionModelWithProjection.from_pretrained(
     "h94/IP-Adapter",
@@ -31,7 +31,7 @@ pipeline.load_lora_weights('animte/pixar-sdxl-lora', weight_name='PixarXL.safete
 app = FaceAnalysis(name="buffalo_l", providers=['CPUExecutionProvider'])
 app.prepare(ctx_id=0, det_size=(640, 640))
 
-def generate_pixar_portrait(input_image, num_images, guidance_scale, ip_adapter_scale, lora_scale):
+def generate_pixar_portrait(input_image, prompt="breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", guidance_scale=6, ip_adapter_scale=0.5, lora_scale=0.8, num_images=2, strength=0.6, num_inference_steps=50):
     init_image = input_image.convert("RGB")
     
     pipeline.set_ip_adapter_scale(ip_adapter_scale)
@@ -42,10 +42,11 @@ def generate_pixar_portrait(input_image, num_images, guidance_scale, ip_adapter_
     cropped_image = np.array(init_image)[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
     
     images = pipeline(
-        prompt="breathtaking 3D image in the pixar style, pixar-style, cartoon",
+        prompt=prompt,
         negative_prompt=negative_prompt,
         image=init_image,
-        strength=0.6,
+        strength=strength,
+        num_inference_steps=num_inference_steps,
         guidance_scale=guidance_scale,
         ip_adapter_image=cropped_image,
         num_images_per_prompt=num_images,
@@ -57,7 +58,6 @@ def generate_pixar_portrait(input_image, num_images, guidance_scale, ip_adapter_
     return images
 
 def main():
-    # Gradio interface
     with gr.Blocks() as iface:
         gr.Markdown("# Pixar-Style Portrait Generator")
         gr.Markdown("Upload a portrait image to transform it into a Pixar-style cartoon character.")
@@ -69,17 +69,32 @@ def main():
         with gr.Row():
             generate_button = gr.Button("Generate")
         
-        with gr.Accordion("Basic Settings", open=True):
+        with gr.Accordion("Settings", open=True):
             num_images = gr.Slider(minimum=1, maximum=4, step=1, value=2, label="Number of Images")
             guidance_scale = gr.Slider(minimum=1, maximum=20, step=0.5, value=6, label="Guidance Scale")
-        
+            
         with gr.Accordion("Advanced Settings", open=False):
             ip_adapter_scale = gr.Slider(minimum=0, maximum=1, step=0.05, value=0.5, label="IP-Adapter Scale")
             lora_scale = gr.Slider(minimum=0, maximum=1, step=0.05, value=0.8, label="LoRA Scale")
+            prompt = gr.Textbox(value="breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", label="Prompt")
+            strength = gr.Slider(minimum=0, maximum=1, step=0.05, value=0.6, label="Strength")
+            num_inference_steps = gr.Slider(minimum=1, maximum=100, step=1, value=50, label="Number of Inference Steps")
         
         generate_button.click(
             generate_pixar_portrait,
-            inputs=[input_image, num_images, guidance_scale, ip_adapter_scale, lora_scale],
+            inputs=[input_image, prompt, guidance_scale, ip_adapter_scale, lora_scale, num_images, strength, num_inference_steps],
+            outputs=output_gallery
+        )
+
+        gr.Examples(
+            examples=[
+                ["./assets/examples/andrej_karpathy.webp", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 6, 0.5, 0.8, 2, 0.6, 50],
+                ["./assets/examples/andrew_ng.jpg", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 6, 0.5, 0.8, 2, 0.6, 50],
+                ["./assets/examples/yann-lecun.jpg", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 6, 0.5, 0.8, 2, 0.6, 50]
+            ],
+            inputs=[input_image, prompt, guidance_scale, ip_adapter_scale, lora_scale, num_images, strength, num_inference_steps],
+            fn=generate_pixar_portrait,
+            cache_examples=True,
             outputs=output_gallery
         )
 

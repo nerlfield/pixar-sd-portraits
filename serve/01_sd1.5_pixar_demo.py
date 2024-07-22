@@ -21,7 +21,7 @@ pipeline.scheduler = diffusers.EulerDiscreteScheduler.from_config(
 app = FaceAnalysis(name="buffalo_l", providers=['CPUExecutionProvider'])
 app.prepare(ctx_id=0, det_size=(640, 640))
 
-negative_prompt = "noisy, sloppy, messy, grainy, highly detailed, ultra textured, photo, NSFW"
+negative_prompt = "noisy, messy, grainy, highly detailed, ultra textured, photo, NSFW"
 
 def create_collage(images, size=(1024, 1024)):
     num_images = len(images)
@@ -58,7 +58,7 @@ def create_collage(images, size=(1024, 1024)):
 
     return collage
 
-def generate_pixar_portrait(input_image, prompt, guidance_scale, ip_adapter_scale, num_images, n_infer_steps, strength):
+def generate_pixar_portrait(input_image, prompt="breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", guidance_scale=10.5, ip_adapter_scale=0.8, num_images=4, n_infer_steps=50, strength=0.6):
     init_image = input_image.convert("RGB")
     
     faces = app.get(np.array(init_image))
@@ -111,11 +111,14 @@ def main():
 
         gr.Examples(
             examples=[
-                "../assets/examples/example1.jpg",
-                "../assets/examples/example2.jpg",
-                "../assets/examples/example3.jpg"
+                ["./assets/examples/andrej_karpathy.webp", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 10.5, 0.8, 4, 50, 0.6],
+                ["./assets/examples/andrew_ng.jpg", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 10.5, 0.8, 4, 50, 0.6],
+                ["./assets/examples/yann-lecun.jpg", "breathtaking 3D image in the pixar style, disney, cartoon, 4k,unreal engine, blender 8k,outdoor,natural lighting,adult,clear face,stock image", 10.5, 0.8, 4, 50, 0.6]
             ],
-            inputs=input_image
+            inputs=[input_image, prompt, guidance_scale, ip_adapter_scale, num_images, n_infer_steps, strength],
+            fn=generate_pixar_portrait,
+            cache_examples=True,
+            outputs=output_gallery
         )
 
     iface.launch()
