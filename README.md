@@ -28,7 +28,7 @@ The repository features the following main components:
    - `00_sdxl_pixar_lora_demo.py`: Runs the SDXL demo with face IP-Adapter + Pixar LoRA that I took from civitAI. You can find my fork here: [Pixar-SDXL-LoRA](https://huggingface.co/animte/pixar-sdxl-lora)
    - `01_sd1.5_pixar_demo.py`: Same as 00, but uses the SD1.5 finetuned checkpoint on Pixar images. It looks much better than the SDXL variant. I recommend running this demo.
 
-## Environment Setup Instructions
+## Environment Setup
 
 To begin experimenting with Pixar-style portrait generation, set up your environment by following these steps:
 
