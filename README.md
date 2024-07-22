@@ -26,15 +26,18 @@ To begin experimenting with Pixar-style portrait generation, set up your environ
 
 1. Create a new conda environment:
    ```bash
-   conda create --name pixarsd python=3.10
+   conda create --name pixarsd2 python=3.10
    ```
 
 2. Activate the environment:
    ```bash
-   conda activate pixarsd
+   conda activate pixarsd2
    ```
 
 3. Install system dependencies:
+   pip install .
+
+
    ```bash
    sudo apt-get install cmake protobuf-compiler libprotobuf-dev
    ```
