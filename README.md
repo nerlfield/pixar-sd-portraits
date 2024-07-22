@@ -10,7 +10,7 @@ The primary objective of this project is to develop a minimal, workable code sol
 3. Preserving key facial attributes and a recognizable degree of the individual's identity
 4. Applying the distinctive, animated appeal seen in Pixar films
 
-<!-- ![Example Image](assets/example.png) -->
+![Example Image](assets/result.jpg)
 
 ## Repository Contents
 
@@ -26,12 +26,12 @@ To begin experimenting with Pixar-style portrait generation, set up your environ
 
 1. Create a new conda environment:
    ```bash
-   conda create --name pixarsd2 python=3.10
+   conda create --name pixarsd python=3.10
    ```
 
 2. Activate the environment:
    ```bash
-   conda activate pixarsd2
+   conda activate pixarsd
    ```
 
 3. Install system dependencies:
@@ -47,10 +47,12 @@ To begin experimenting with Pixar-style portrait generation, set up your environ
    pip install pybind11
    pip install onnx==1.11.0 --find-links https://download.pytorch.org/whl/onnx_stable.html
    pip install -r requirements.txt
-   pip install insightface
    ```
 
 5. Start Jupyter Lab to access the notebooks:
    ```bash
    jupyter lab --no-browser --ip 0.0.0.0 --port 8888 --allow-root --notebook-dir=.
    ```
+
+pip install -v -U stable-fast
+<!-- pip install -v -U git+https://github.com/chengzeyi/stable-fast.git@main#egg=stable-fast -->

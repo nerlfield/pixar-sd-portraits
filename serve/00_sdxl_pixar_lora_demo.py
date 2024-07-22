@@ -26,7 +26,7 @@ pipeline.scheduler = diffusers.EulerDiscreteScheduler.from_config(
     pipeline.scheduler.config
 )
 
-pipeline.load_lora_weights('./my_loras/', weight_name='PixarXL.safetensors', adapter_name="pixar-style")
+pipeline.load_lora_weights('animte/pixar-sdxl-lora', weight_name='PixarXL.safetensors', adapter_name="pixar-style")
 
 app = FaceAnalysis(name="buffalo_l", providers=['CPUExecutionProvider'])
 app.prepare(ctx_id=0, det_size=(640, 640))
@@ -42,7 +42,7 @@ def generate_pixar_portrait(input_image, num_images, guidance_scale, ip_adapter_
     cropped_image = np.array(init_image)[int(bbox[1]):int(bbox[3]), int(bbox[0]):int(bbox[2])]
     
     images = pipeline(
-        prompt="breathtaking 3D image in the style of pixar-style",
+        prompt="breathtaking 3D image in the pixar style, pixar-style, cartoon",
         negative_prompt=negative_prompt,
         image=init_image,
         strength=0.6,
@@ -71,7 +71,7 @@ def main():
         
         with gr.Accordion("Basic Settings", open=True):
             num_images = gr.Slider(minimum=1, maximum=4, step=1, value=2, label="Number of Images")
-            guidance_scale = gr.Slider(minimum=1, maximum=10, step=0.5, value=6, label="Guidance Scale")
+            guidance_scale = gr.Slider(minimum=1, maximum=20, step=0.5, value=6, label="Guidance Scale")
         
         with gr.Accordion("Advanced Settings", open=False):
             ip_adapter_scale = gr.Slider(minimum=0, maximum=1, step=0.05, value=0.5, label="IP-Adapter Scale")
